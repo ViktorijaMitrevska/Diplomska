@@ -1,0 +1,155 @@
+﻿
+@model Diplomska.ViewModels.IzvestajDashboardViewModel
+
+<h3>Споредба по квартали</h3>
+<div class="container px-0">
+    <div class="row">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <form method="get" class="row g-3 mb-2">
+                <div class="col-md-6">
+                    <select name="tip" class="form-select" id="tipSelect">
+                        <option value="kvartaliVoGodina" selected="@(Model.Tip == "kvartaliVoGodina")">4 квартали во година</option>
+                        <option value="kvartalNizGodini" selected="@(Model.Tip == "kvartalNizGodini")">Ист квартал низ години</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <select name="godina" class="form-select">
+                        @foreach (var y in Model.DostapniGodini)
+                        {
+                            <option value="@y" selected="@(Model.Godina == y)">@y</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-2" id="kvartalDiv">
+                    <select name="kvartal" class="form-select">
+                        <option value="1" selected="@(Model.Kvartal == 1)">Q1</option>
+                        <option value="2" selected="@(Model.Kvartal == 2)">Q2</option>
+                        <option value="3" selected="@(Model.Kvartal == 3)">Q3</option>
+                        <option value="4" selected="@(Model.Kvartal == 4)">Q4</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <button class="btn btn-primary" style="background-color:#c20808; border-color:#c20808;">Прикажи</button>
+                </div>
+            </form>
+
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle"
+                        style="background-color:#c20808; border-color:#c20808;"
+                        type="button"
+                        data-bs-toggle="dropdown">
+                    Извештаи
+                </button>
+
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" asp-action="SporedbaPoGodini">Споредба по години</a></li>
+                    <li><a class="dropdown-item" asp-action="TopFirmi">Годишен извештај</a></li>
+                    <li><a class="dropdown-item" asp-action="FirmaGodini">Споредба по фирма</a></li>
+                </ul>
+            </div>
+           </div>
+
+    </div>
+</div>
+
+<script>
+    function toggleFields() {
+        const tip = document.getElementById("tipSelect").value;
+
+        document.getElementById("kvartalDiv").style.display =
+            tip === "kvartalNizGodini" ? "block" : "none";
+    }
+
+    document.getElementById("tipSelect").addEventListener("change", toggleFields);
+    toggleFields();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<div>
+    <canvas id="chart" height="400"></canvas>
+</div>
+<a class="btn btn-success"
+   asp-action="ExportExcel"
+   asp-route-tip="@Model.Tip"
+   asp-route-godina="@Model.Godina"
+   asp-route-kvartal="@Model.Kvartal">
+    <i class="bi bi-filetype-xlsx"></i> Excel
+</a>
+<a class="btn btn-danger"
+   asp-action="ExportPdf"
+   asp-route-tip="@Model.Tip"
+   asp-route-godina="@Model.Godina"
+   asp-route-kvartal="@Model.Kvartal">
+    <i class="bi bi-filetype-pdf"></i> PDF
+</a>
+
+
+
+<script>
+    const labels = [];
+    const sumData = [];
+    const countData = [];
+    const colors = [
+            'rgba(194, 24, 7, 0.7)',
+            'rgba(54, 162, 235, 0.7)'
+        ];
+    @foreach (var r in Model.Rezultati)
+    {
+            <text>
+                labels.push("@r.Key");
+                sumData.push(@r.Value.Sum(x => x.VkupenIznos));
+                countData.push(@r.Value.Sum(x => x.BrojFakturi));
+            </text>
+    }
+
+    new Chart(document.getElementById("chart"), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Вкупен износ',
+                    data: sumData,
+                    yAxisID: 'y',
+                    backgroundColor: colors[0]
+                },
+                {
+                    label: 'Број на нарачки',
+                    data: countData,
+                    yAxisID: 'y1',
+                    backgroundColor: colors[1]
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    type: 'linear',
+                    position: 'left',
+                    title: {
+                        display: true,
+                        text: 'Износ'
+                    }
+                },
+                y1: {
+                    type: 'linear',
+                    position: 'right',
+                    grid: {
+                        drawOnChartArea: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Број на нарачки'
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+
+

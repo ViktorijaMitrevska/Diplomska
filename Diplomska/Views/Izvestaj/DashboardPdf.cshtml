@@ -1,0 +1,29 @@
+﻿@model Diplomska.ViewModels.IzvestajDashboardViewModel
+
+<h2>Квартален извештај</h2>
+<hr />
+
+@foreach (var sekcija in Model.Rezultati)
+{
+    <h4>@sekcija.Key</h4>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Фирма</th>
+                <th>Број на фактури</th>
+                <th>Вкупен износ</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var f in sekcija.Value)
+            {
+                <tr>
+                    <td>@f.FirmaName</td>
+                    <td>@f.BrojFakturi</td>
+                    <td>@f.VkupenIznos.ToString("N2")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

@@ -1,0 +1,44 @@
+﻿@model VleznaFaktura
+
+@{
+    ViewData["Title"] = "New Faktura";
+}
+
+<style>
+    .dodaj {
+        background-color: #c20808;
+        border-color: #c20808;
+    }
+
+        .dodaj:hover {
+            background-color: white;
+            color: #c20808;
+            border-color: #c20808;
+        }
+</style>
+
+<div class="container">
+    <h2>Внеси нова фактура</h2>
+    <form asp-action="Create" method="post">
+        <div class="form-group">
+            <label asp-for="Market">Маркет</label>
+            <input asp-for="Market" class="form-control" required />
+        </div>
+        <div class="form-group">
+            <label asp-for="BrojNaDokument">Број на фактура</label>
+            <input asp-for="BrojNaDokument" class="form-control" required />
+        </div>
+        <div class="form-group">
+            <label asp-for="Suma">Износ</label>
+            <input asp-for="Suma" class="form-control" required />
+        </div>
+        <div class="form-group">
+            <label asp-for="FirmaId">Фирма</label>
+            @Html.DropDownListFor(model => model.FirmaId, ViewBag.FirmaId as SelectList, "Избери фирма", new { @class = "form-control" })
+            <span asp-validation-for="FirmaId" class="text-danger"></span>
+        </div>
+        <br />
+        <button type="submit" class="btn btn-primary dodaj">Додај</button>
+        <a class="btn btn-success" asp-action="Index">Назад</a>
+    </form>
+</div>

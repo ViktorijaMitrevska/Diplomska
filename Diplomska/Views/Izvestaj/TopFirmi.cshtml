@@ -1,0 +1,134 @@
+﻿
+@model Diplomska.ViewModels.FirmaIzvestajViewModel
+
+<style>
+    .dodaj {
+        background-color: #c20808;
+        border-color: #c20808;
+        height: 35px;
+    }
+
+        .dodaj:hover {
+            background-color: white;
+            color: #c20808;
+            border-color: #c20808;
+        }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<h2>Извештај </h2>
+
+<div class="container px-0">
+    <div class="row">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <form method="get" asp-action="TopFirmi" class="mb-3">
+                <div class="row">
+                    <div class="col-md-5">
+                        <label class="form-label">Период</label>
+                        <select name="period" class="form-select">
+                            <option value="godishno" selected="@(Model.Period == "godishno")">Годишно</option>
+                            <option value="polugodishno" selected="@(Model.Period == "polugodishno")">Полугодишно</option>
+                            <option value="trimesecno" selected="@(Model.Period == "trimesecno")">Тримесечно</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-5">
+                        <label class="form-label">Година</label>
+                        <select name="godina" class="form-select">
+                            @foreach (var g in Model.DostapniGodini)
+                            {
+                                <option value="@g" selected="@(g == Model.SelectedYear)">
+                                    @g
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary dodaj">Прикажи</button>
+                    </div>
+                </div>
+            </form>
+
+            @* <a class="btn btn-primary dodaj" asp-action="SporedbaPoGodini">Споредба по години</a>
+            <a class="btn btn-primary dodaj" asp-action="Dashboard">Споредба по квартали</a>
+            <a class="btn btn-primary dodaj" asp-action="FirmaGodini">Споредба firma</a> *@
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle dodaj"
+                        type="button"
+                        data-bs-toggle="dropdown">
+                    Извештаи
+                </button>
+
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" asp-action="SporedbaPoGodini">Споредба по години</a></li>
+                    <li><a class="dropdown-item" asp-action="Dashboard">Споредба по квартали</a></li>
+                    <li><a class="dropdown-item" asp-action="FirmaGodini">Споредба по фирма</a></li>
+                </ul>
+            </div>
+
+        </div>
+       
+    </div> 
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <h5>Број на нарачки по фирма</h5>
+        <canvas id="ordersChart"></canvas>
+    </div>
+
+    <div class="col-md-6">
+        <h5>Вкупна сума по фирма</h5>
+        <canvas id="amountChart"></canvas>
+    </div>
+</div>
+<div class="d-flex gap-2 mb-3 mt-3">
+    <a class="btn btn-success"
+       asp-action="ExportTopFirmiExcel"
+       asp-route-period="@Model.Period"
+       asp-route-godina="@Model.SelectedYear">
+        <i class="bi bi-filetype-xlsx"></i> Excel
+    </a>
+
+    <a class="btn btn-danger"
+       asp-action="TopFirmiPdf"
+       asp-route-period="@Model.Period"
+       asp-route-godina="@Model.SelectedYear">
+        <i class="bi bi-filetype-pdf"></i> PDF
+    </a>
+</div>
+
+<script>
+    const labels = @Html.Raw(
+                Json.Serialize(Model.TopFirmi.Select(f => f.FirmaName))
+        );
+    const brojNaracki = @Html.Raw(
+                Json.Serialize(Model.TopFirmi.Select(f => f.BrojFakturi))
+        );
+    const vkupniIznosi = @Html.Raw(
+                Json.Serialize(Model.TopFirmi.Select(f => f.VkupenIznos))
+        );
+    new Chart(document.getElementById('ordersChart'), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Број на нарачки',
+                data: brojNaracki
+            }]
+        }
+    });
+    new Chart(document.getElementById('amountChart'), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Вкупна сума',
+                data: vkupniIznosi
+            }]
+        }
+    });
+</script>
+

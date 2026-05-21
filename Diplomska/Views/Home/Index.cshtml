@@ -1,0 +1,12 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Евиденција за плаќање на фактури за Бурле Маркети - Ресен</h1>
+    @if (!User.Identity.IsAuthenticated)
+    {
+        <a asp-controller="Auth" asp-action="Login">Login</a>
+        <a asp-controller="Auth" asp-action="Register">Register</a>
+    }
+</div>

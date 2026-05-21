@@ -1,0 +1,114 @@
+﻿@model List<FirmaGodiniViewModel>
+
+<h3>Споредба по години за фирмата</h3>
+
+<div class="container px-0">
+    <div class="row">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <form method="get" asp-action="FirmaGodini" class="mb-3 d-flex gap-2">
+                <select name="firmaId" class="form-select" style="width:250px;">
+                    <option value="">-- Сите фирми --</option>
+                    @foreach (var f in ViewBag.FirmiList as SelectList)
+                    {
+                        <option value="@f.Value" selected="@(f.Value == ViewBag.SelectedFirmaId)">
+                            @f.Text
+                        </option>
+                    }
+                </select>
+
+                <select name="lastYears" class="form-select" style="width:150px;">
+                    @for (int i = 2; i <= 5; i++)
+                    {
+                        <option value="@i" selected="@(i == ViewBag.LastYears)">@i години</option>
+                    }
+                </select>
+
+                <button type="submit" class="btn btn-primary" style="background-color:#c20808; border-color:#c20808;">Прикажи</button>
+            </form>
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle "
+                        style="background-color:#c20808; border-color:#c20808;"
+                        type="button"
+                        data-bs-toggle="dropdown">
+                    Извештаи
+                </button>
+
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" asp-action="SporedbaPoGodini">Споредба по години</a></li>
+                    <li><a class="dropdown-item" asp-action="Dashboard">Споредба по квартали</a></li>
+                    <li><a class="dropdown-item" asp-action="TopFirmi">Годишен извештај</a></li>
+                </ul>
+            </div>
+        </div>
+     </div>
+</div>
+
+<div style="height:400px;">
+    <canvas id="firmaChart"></canvas>
+</div>
+<div class="d-flex gap-2 mb-3 mt-3">
+    <a class="btn btn-success"
+       asp-action="FirmaGodiniExcel"
+       asp-route-firmaId="@ViewBag.SelectedFirmaId"
+       asp-route-lastYears="@ViewBag.LastYears">
+        <i class="bi bi-filetype-xlsx"></i> Excel
+    </a>
+
+    <a class="btn btn-danger"
+       asp-action="FirmaGodiniPdf"
+       asp-route-firmaId="@ViewBag.SelectedFirmaId"
+       asp-route-lastYears="@ViewBag.LastYears">
+        <i class="bi bi-filetype-pdf"></i> PDF
+    </a>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const labels = @Html.Raw(Json.Serialize(Model.Select(x => x.Godina)));
+    const sumData = @Html.Raw(Json.Serialize(Model.Select(x => x.VkupenIznos)));
+    const countData = @Html.Raw(Json.Serialize(Model.Select(x => x.BrojFakturi)));
+
+    const colors = [
+        'rgba(194, 24, 7, 0.7)',
+        'rgba(54, 162, 235, 0.7)'
+    ];
+
+    const ctx = document.getElementById('firmaChart').getContext('2d');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Вкупен износ',
+                    data: sumData,
+                    yAxisID: 'y',
+                    backgroundColor: colors[0]
+                },
+                {
+                    label: 'Број на нарачки',
+                    data: countData,
+                    yAxisID: 'y1',
+                    backgroundColor: colors[1]
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    type: 'linear',
+                    position: 'left',
+                    title: { display: true, text: 'Износ' }
+                },
+                y1: {
+                    type: 'linear',
+                    position: 'right',
+                    grid: { drawOnChartArea: false },
+                    title: { display: true, text: 'Број на нарачки' }
+                }
+            }
+        }
+    });
+</script>

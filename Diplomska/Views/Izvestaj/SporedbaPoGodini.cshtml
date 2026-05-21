@@ -1,0 +1,130 @@
+﻿
+@model Diplomska.ViewModels.FirmaGodinaSporedbaViewModel
+
+<h2>Споредба на последните години</h2>
+<div class="container px-0">
+    <div class="row">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <div class="container px-0 mb-4">
+                <form method="get" asp-action="SporedbaPoGodini">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-3">
+                                <label>Број на години за споредба</label>
+                                <select name="lastNYears" class="form-select">
+                                <option value="2" selected="@(ViewBag.SelectedYear == 2)" >2 години</option>
+                                <option value="3" selected="@(ViewBag.SelectedYear == 3)">3 години</option>
+                                <option value="5" selected="@(ViewBag.SelectedYear == 5)">5 години</option>
+                                <option value="10" selected="@(ViewBag.SelectedYear == 10)">10 години</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-3 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary" style="background-color:#c20808; border-color:#c20808;">
+                                    Прикажи
+                                </button>
+                            </div>
+                        </div>
+                </form>
+
+            </div>
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle"
+                        style="background-color:#c20808; border-color:#c20808;"
+                        type="button"
+                        data-bs-toggle="dropdown">
+                    Извештаи
+                </button>
+
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" asp-action="TopFirmi">Годишен извештај</a></li>
+                    <li><a class="dropdown-item" asp-action="Dashboard">Споредба по квартали</a></li>
+                    <li><a class="dropdown-item" asp-action="FirmaGodini">Споредба по фирма</a></li>
+                </ul>
+            </div>
+        </div>
+
+        </div>
+        </div>
+
+@if (Model.Items.Any())
+{
+    <div class="row">
+        <div class="col-12">
+            <canvas id="multiCompareChart" height="400"></canvas>
+        </div>
+    </div>
+}
+else
+{
+    <p>Нема податоци за избраните години.</p>
+}
+
+<div class="d-flex gap-2 mt-3">
+    <a class="btn btn-success"
+       asp-action="ExportMultiGodiniExcel">
+        <i class="bi bi-filetype-xlsx"></i> Excel
+    </a>
+
+    <a class="btn btn-danger"
+       asp-action="MultiGodiniPdf">
+        <i class="bi bi-filetype-pdf"></i> PDF
+    </a>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        window.onload = function() {
+            const labels = @Html.Raw(Json.Serialize(Model.Items.Select(x => x.FirmaName)));
+
+            const datasets = [];
+        const colors = [
+            'rgba(194, 24, 7, 0.7)',
+            'rgba(54, 162, 235, 0.7)',
+            'rgba(255, 206, 86, 0.7)',
+            'rgba(75, 192, 192, 0.7)',
+            'rgba(153, 102, 255, 0.7)',
+            'rgba(255, 99, 132, 0.7)',
+            'rgba(255, 159, 64, 0.7)'
+        ];
+
+        @for (int i = 0; i < Model.Godini.Count; i++)
+        {
+                <text>
+                datasets.push({
+                    label: '@Model.Godini[i]',
+                    data: @Html.Raw(Json.Serialize(Model.Items.Select(x => x.GodiniData[Model.Godini[i]].VkupenIznos))),
+                    backgroundColor: colors[@i % colors.length]
+                });
+                </text>
+        }
+
+
+            new Chart(document.getElementById('multiCompareChart'), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        x: { stacked: false },
+                        y: { stacked: false, beginAtZero: true }
+                    }
+                }
+            });
+        };
+    </script>
+}
+

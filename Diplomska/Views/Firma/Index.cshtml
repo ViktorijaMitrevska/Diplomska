@@ -1,0 +1,120 @@
+﻿@model PagedResultViewModel<Diplomska.ViewModels.FirmaListItemViewModel>
+
+
+@{
+    ViewData["Title"] = "Фирми";
+}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+    .dodaj {
+        background-color: #c20808;
+        border-color: #c20808;
+        margin-bottom: 10px;
+    }
+
+    .dodaj:hover {
+        background-color: white;
+        color: #c20808;
+        border-color: #c20808;}
+
+    .pagination .page-item.active .page-link
+    {
+        background-color: #c20808;
+        border-color: #c20808;
+        color: white;
+    }
+
+    .pagination .page-link:hover {
+        background-color: #f2f2f2;
+        color: #000;
+    }
+
+    .pagination .page-link {
+        color: #c20808;
+    }
+</style>
+
+
+<h2>Листа на сите фирми</h2>
+
+<a class="btn btn-primary dodaj" asp-action="Create"> <i class="bi bi-plus-circle" style="margin-right:5px;"></i>Додај</a>
+
+<br />
+
+<form method="get" asp-action="Index">
+    <div class="input-group mb-4">
+        <input type="text" name="searchString" class="form-control" placeholder="Барај фирма..." />
+        <button type="submit" class="btn btn-primary" style="background-color:#c20808; border-color: #c20808;">
+            <i class="bi bi-search"></i> Пребарај
+        </button>
+    </div>
+</form>
+
+@if (!Model.Items.Any())
+{
+    <div class="alert alert-info">
+       Не е пронајдена ниту една фирма.
+    </div>
+}
+else
+{
+    
+    <div class="container mt-4">
+        @foreach (var firma in Model.Items)
+        {
+            <a asp-action="FakturaByFirma" asp-route-id="@firma.FirmaId" style="text-decoration:none; color:black;">
+                <div class="row border rounded p-3 mb-2 align-items-center">
+                    <div class="col-md-8 fw-bold">
+                        <h5 class="card-title">@firma.Name</h5>
+                        @* <h5 class="text-small">Сметка: @firma.Smetka</h5> *@
+                   
+                    </div>
+                    <div class="col-md-4 text-end text-danger">
+                        <h5>Вкупен долг:</h5>
+                        <span class="text-danger fw-bold">
+                            @firma.VkupenDolg.ToString("N2") ден.
+                        </span>
+                    </div>
+
+                </div>
+            </a>
+        }
+        
+    </div>
+
+}
+@if (Model.TotalPages > 1)
+{
+    <nav>
+        <ul class="pagination justify-content-center">
+
+            <li class="page-item @(Model.Page == 1 ? "disabled" : "")">
+                <a class="page-link"
+                   asp-action="Index"
+                   asp-route-page="@(Model.Page - 1)">
+                    ←
+                </a>
+            </li>
+
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.Page ? "active" : "")">
+                    <a class="page-link"
+                       asp-action="Index"
+                       asp-route-page="@i">
+                        @i
+                    </a>
+                </li>
+            }
+
+            <li class="page-item @(Model.Page == Model.TotalPages ? "disabled" : "")">
+                <a class="page-link"
+                   asp-action="Index"
+                   asp-route-page="@(Model.Page + 1)">
+                    →
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+}

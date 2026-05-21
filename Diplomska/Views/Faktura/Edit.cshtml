@@ -1,0 +1,56 @@
+﻿@model VleznaFaktura
+
+@{
+    ViewData["Title"] = "Уреди";
+}
+<style>
+    .dodaj {
+        background-color: #c20808;
+        border-color: #c20808;
+    }
+
+        .dodaj:hover {
+            background-color: white;
+            color: #c20808;
+            border-color: #c20808;
+        }
+</style>
+
+<div class="container">
+    <h2>Промени податоци во фактура</h2>
+    <form asp-action="Edit" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="FakturaId" />
+        <div class="form-group">
+            <label asp-for="Market" class="control-label">Маркет</label>
+            <input asp-for="Market" class="form-control" />
+            <span asp-validation-for="Market" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="BrojNaDokument" class="control-label">Број на фактура</label>
+            <input asp-for="BrojNaDokument" class="form-control" />
+            <span asp-validation-for="BrojNaDokument" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Suma" class="control-label">Износ</label>
+            <input asp-for="Suma" class="form-control" />
+            <span asp-validation-for="Suma" class="text-danger"></span>
+        </div>
+        
+        <div class="form-group">
+            <label asp-for="FirmaId">Фирма</label>
+            @Html.DropDownListFor(model => model.FirmaId, ViewBag.FirmaId as SelectList, "Избери фирма", new { @class = "form-control" })
+            <span asp-validation-for="FirmaId" class="text-danger"></span>
+        </div>
+        <br />
+        <div class="form-group">
+            <input type="submit" value="Зачувај" class="btn btn-primary dodaj" />
+            <a asp-action="Index" class="btn btn-success">Назад</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

@@ -1,0 +1,39 @@
+﻿@model List<VleznaFaktura>
+
+@{
+    ViewData["Title"] = "Салдо од претходни години";
+}
+
+<h2>Салдо од претходни години</h2>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        Нема неплатени фактури од претходни години.
+    </div>
+}
+else
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Фирма</th>
+                <th>Број</th>
+                <th>Година</th>
+                <th class="text-end">Износ</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var f in Model)
+            {
+                <tr>
+                    <td>@f.Firma?.Name</td>
+                    <td>@f.BrojNaDokument</td>
+                    <td>@f.Godina</td>
+                    <td class="text-end">@f.Suma.ToString("N2") ден</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+<a class="btn btn-primary" style="background-color:#c20808; border-color: #c20808;" asp-action="Index">Назад</a>

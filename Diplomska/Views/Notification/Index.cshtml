@@ -1,0 +1,38 @@
+﻿@model List<Diplomska.Models.Notification>
+
+<h2>Известувања</h2>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Нема известувања</div>
+}
+else
+{
+    <ul class="list-group">
+        @foreach (var n in Model)
+        {
+            <li class="list-group-item d-flex justify-content-between
+                        @(n.IsRead ? "" : "list-group-item-warning")">
+
+                <div>
+                    <strong>@n.Title</strong><br />
+                    @n.Message<br />
+                    <small class="text-muted">
+                        @n.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
+                    </small>
+                </div>
+
+                @if (!n.IsRead)
+                {
+                    <form asp-action="MarkAsRead" method="post">
+                        <input type="hidden" name="id" value="@n.NotificationId" />
+                        <button class="btn btn-sm btn-success">
+                            Прочитано
+                        </button>
+                    </form>
+                }
+            </li>
+        }
+    </ul>
+}
+

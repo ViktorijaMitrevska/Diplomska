@@ -1,0 +1,18 @@
+﻿@model int
+
+<a asp-controller="Notification"
+   asp-action="Index"
+   class="nav-link d-flex align-items-center gap-1 notification-link">
+
+    <i class="bi bi-bell"></i>
+    <span>Известувања</span>
+
+    @if (Model > 0)
+    {
+        <span class="badge rounded-pill notification-badge">
+            @Model
+        </span>
+    }
+</a>
+
+

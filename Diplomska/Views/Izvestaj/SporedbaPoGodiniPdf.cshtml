@@ -1,0 +1,32 @@
+﻿@model FirmaGodinaSporedbaViewModel
+@{
+    Layout = null;
+}
+
+<h2>Споредба по години</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Фирма</th>
+            @foreach (var g in Model.Godini)
+            {
+                <th>@g година (Број / Сума)</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Items)
+        {
+            <tr>
+                <td>@item.FirmaName</td>
+                @foreach (var g in Model.Godini)
+                {
+                    var d = item.GodiniData[g];
+                    <td>@d.BrojFakturi / @d.VkupenIznos.ToString("N2")</td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+

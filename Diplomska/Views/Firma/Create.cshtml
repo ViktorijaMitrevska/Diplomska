@@ -1,0 +1,36 @@
+﻿@model Firma
+
+@{
+    ViewData["Title"] = "New Firma";
+}
+
+<style>
+    .dodaj {
+        background-color: #c20808;
+        border-color: #c20808;
+    }
+
+        .dodaj:hover {
+            background-color: white;
+            color: #c20808;
+            border-color: #c20808;
+        }
+</style>
+
+<div class="create-container">
+    <h2>Внеси нова фирма</h2>
+    <form asp-action="Create" method="post">
+        <div class="form-group">
+            <label asp-for="Name">Име на фирма</label>
+            <input asp-for="Name" class="form-control" required />
+        </div>
+        @* <div class="form-group">
+            <label asp-for="TransakciskaSmetka"> Трансакциска сметка на фирма</label>
+            <input asp-for="TransakciskaSmetka" class="form-control" required />
+        </div> *@
+       
+        <br />
+        <button type="submit" class="btn btn-primary dodaj">Додај</button>
+        <a class="btn btn-success" asp-action="Index">Назад</a>
+    </form>
+</div>

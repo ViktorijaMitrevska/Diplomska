@@ -1,0 +1,61 @@
+﻿@model Diplomska.ViewModels.Auth.UserProfileViewModel
+
+@{
+    ViewData["Title"] = "Мој профил";
+}
+<style>
+    .kopce {
+        height: 35px;
+        background-color: white;
+        color: #c20808;
+        border-color: #c20808;
+    }
+
+        .kopce:hover {
+            background-color: #c20808;
+            border-color: #c20808;
+            color:white;
+        }
+</style>
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+        <div class="card shadow-sm">
+            <div class="card-header text-white" style="background-color:#c20808; border-color: #c20808;">
+                <h5 class="mb-0">Мој профил</h5>
+            </div>
+
+            <div class="card-body">
+
+                <div class="mb-3">
+                    <label class="form-label">Име</label>
+                    <input class="form-control" value="@Model.Name" disabled />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">E-адреса</label>
+                    <input class="form-control" value="@Model.Email" disabled />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Улога</label>
+                    <input class="form-control" value="@Model.Role" disabled />
+                </div>
+
+                <div class="d-grid mt-4">
+                    <a asp-action="ChangePassword"
+                       class="btn btn-outline-primary kopce">
+                       <i class="bi bi-lock"></i> Промени лозинка
+                    </a>
+                </div>
+                @if (User.IsInRole("Owner"))
+                {
+                    <div class="d-grid mt-4">
+                        <a asp-action="RegisterEmployee" 
+                        class="btn btn-outline-primary kopce"><i class="bi bi-plus-circle" style="margin-right:5px;margin-top:25px;"></i>Додај вработен</a>
+                    </div>
+                }
+                
+            </div>
+        </div>
+    </div>
+</div>

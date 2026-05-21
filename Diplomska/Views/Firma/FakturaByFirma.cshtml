@@ -1,0 +1,111 @@
+﻿@model Diplomska.ViewModels.FakturiByFirmaViewModel
+
+@{
+    ViewData["Title"] = "Фактури по фирма";
+}
+
+<style>
+    .pagination .page-item.active .page-link {
+        background-color: #c20808; 
+        border-color: #c20808;
+        color: white;
+    }
+
+    .pagination .page-link:hover {
+        background-color: #f2f2f2;
+        color: #000;
+    }
+
+    .pagination .page-link {
+        color: #c20808;
+    }
+
+</style>
+<div class="container">
+    <div class="row"> 
+        <h2>@Model.Firma.Name</h2>
+        <h5 class="col-md-12 text-danger ">Вкупен долг:@Model.VkupenDolg.ToString("N2") ден.</h5>
+    </div>
+</div>
+
+
+@if (!Model.Fakturi.Items.Any())
+{
+    <div class="alert alert-info">
+        Не е пронајдена ниту една фактура за оваа фирма.
+    </div>
+}
+else
+{
+    <table class="table table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>Маркет</th>
+                <th>Број на фактура</th>
+                <th>Име на фирма</th>
+                <th class="text-end">Износ</th>
+                <th class="text-center">Платено</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var faktura in Model.Fakturi.Items)
+            {
+                <tr>
+                    <td>@faktura.Market</td>
+                    <td>@faktura.BrojNaDokument</td>
+                    <td>@Model.Firma.Name</td>
+                    <td class="text-end">
+                        @faktura.Suma.ToString("N2") ден
+                    </td>
+                    <td class="text-center">
+                        @if (faktura.DaliEPlateno)
+                        {
+                            <span class="badge bg-success">Да</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Не</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+  
+    <nav>
+        <ul class="pagination justify-content-center">
+
+            <li class="page-item @(Model.Fakturi.Page == 1 ? "disabled" : "")">
+                <a class="page-link"
+                   asp-action="FakturaByFirma"
+                   asp-route-id="@Model.Firma.FirmaId"
+                   asp-route-page="@(Model.Fakturi.Page - 1)">
+                    ←
+                </a>
+            </li>
+
+            @for (int i = 1; i <= Model.Fakturi.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.Fakturi.Page ? "active" : "")">
+                    <a class="page-link"
+                       asp-action="FakturaByFirma"
+                       asp-route-id="@Model.Firma.FirmaId"
+                       asp-route-page="@i">
+                        @i
+                    </a>
+                </li>
+            }
+
+            <li class="page-item @(Model.Fakturi.Page == Model.Fakturi.TotalPages ? "disabled" : "")">
+                <a class="page-link"
+                   asp-action="FakturaByFirma"
+                   asp-route-id="@Model.Firma.FirmaId"
+                   asp-route-page="@(Model.Fakturi.Page + 1)">
+                    →
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+
+}
